@@ -1,0 +1,194 @@
+# Vehicle Detection & Speed Measurement (YOLO + ByteTrack)
+
+A simple, reliable tool that detects vehicles in a video, tracks them, and shows their speed on the screen. Fast vehicles are highlighted in red; normal-speed vehicles are shown in green.
+
+
+---
+
+## 1) What This Tool Does
+- Detects vehicles in a road/traffic video
+- Follows each vehicle with a stable ID (tracking)
+- Calculates and displays speed in km/h
+- Highlights speed limit violations (red box)
+
+Supported vehicle types: car, truck, bus, motorcycle/motorbike, bicycle
+
+---
+
+## 2) Requirements
+- Windows 10 or 11
+- Internet (on first run, the model may be downloaded)
+- Python 3.x installed (from Microsoft Store or python.org)
+- A traffic video (example: `input_video.mp4`)
+- Free disk space: ~2 GB (packages + temporary files + output video)
+
+Check Python:
+```powershell
+python --version
+```
+
+---
+
+## 3) Project Files
+- `vehicle_detection_main_yolo.py` (main program)
+- `yolo11n.pt` (YOLO model weight; if missing, Ultralytics may download automatically)
+- `input_video.mp4` (your input video; name can be different)
+- `output_video.avi` (output video when using save mode)
+
+---
+
+## 4) Quick Start (Windows PowerShell)
+Open PowerShell in the project folder:
+- In File Explorer, click the address bar in your project folder and type: `powershell` then press Enter.
+
+Run these commands:
+```powershell
+# Go to the project folder (adjust path if needed)
+cd "C:\Users\melse\OneDrive\Desktop\computer vision"
+
+# Create a virtual environment (recommended)
+python -m venv .venv
+
+# Activate it
+.\.venv\Scripts\Activate.ps1
+
+# If activation is blocked, run once in Admin PowerShell:
+# Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+
+# Install dependencies
+python -m pip install --upgrade pip
+pip install ultralytics supervision opencv-python
+```
+
+Run the program:
+- Show on screen (ESC to close):
+```powershell
+python vehicle_detection_main_yolo.py imshow
+```
+- Save to file (no window, writes `output_video.avi`):
+```powershell
+python vehicle_detection_main_yolo.py imwrite
+```
+
+Notes:
+- First run may need internet to download the model.
+- Output file is created in the project folder.
+
+---
+
+## 5) Use Your Own Video
+You have two simple options:
+
+- Option A: Rename method
+  1) Copy your video into the project folder
+  2) Rename it to `input_video.mp4`
+  3) Run the program normally
+
+- Option B: Change the code
+  1) Open `vehicle_detection_main_yolo.py`
+  2) Find this line near the top:
+     ```python
+     VIDEO_IN = "input_video.mp4"
+     ```
+  3) Change it to your file name, for example:
+     ```python
+     VIDEO_IN = "my_video.mp4"
+     ```
+  4) Save and run
+
+Supported formats: MP4 (recommended), AVI, MOV, MKV
+
+Tips for best results:
+- Resolution: 720p or higher is better
+- FPS: 15–30 is good
+- Vehicles should be clear and not too far
+
+---
+
+## 6) How It Works (Simple Explanation)
+1) The program reads each frame of the video.
+2) YOLO detects vehicles (boxes around them).
+3) ByteTrack keeps the same ID for the same vehicle over time.
+4) The program measures how many pixels a vehicle moves between frames.
+5) Using your calibration (meters-per-pixel), it converts this to km/h.
+6) It draws the box and speed text on the video.
+
+---
+
+## 7) Speed Calibration (Very Important)
+To get correct speeds, you must tell the program a real distance in the scene.
+
+In `vehicle_detection_main_yolo.py`, these are the defaults:
+- Two points on the same horizontal line:
+  - `PIX1 = sv.Point(x=400, y=info.height - 120)`
+  - `PIX2 = sv.Point(x=900, y=info.height - 120)`
+- Real distance between these points:
+  - `D_METERS = 25.0`  (meters)
+
+For your video:
+1) Pick two points on the same horizontal line (for example, lane markings).
+2) Measure the real distance between those two points in meters.
+3) Update `PIX1`, `PIX2`, and `D_METERS` in the code.
+
+If you do not change these values, the program still runs, but speeds are approximate.
+
+---
+
+## 8) Configuration You Can Change
+Open `vehicle_detection_main_yolo.py` and look for these variables:
+- `VIDEO_IN` (input video file name)
+- `speed_limit = 50.0` (km/h; red if above, green if below)
+- `NORMAL_COLOR` and `SPEEDING_COLOR` (box colors)
+- `VEHICLE_SET` (vehicle classes you want to detect)
+- `PIX1`, `PIX2`, `D_METERS` (speed calibration)
+
+---
+
+## 9) Output
+- Screen mode (`imshow`): shows live result, no file saved
+- Save mode (`imwrite`): writes `output_video.avi` to the project folder
+
+---
+
+## 10) Rules & Good Practices
+- Always activate the virtual environment before running
+- Use clear videos where vehicles are visible
+- Calibrate speed for each different camera/view if you need accurate km/h
+- Do not run on confidential videos unless you have permission
+- Keep internet on for the first model download
+
+---
+
+## 11) Troubleshooting
+- No window appears
+  - On remote desktop, windows can be blocked; use `imwrite` mode
+- Very slow
+  - CPU is okay but slower; a GPU is not required
+- Model cannot be downloaded
+  - Check internet connection; try again
+- Speeds look wrong
+  - Fix `PIX1`, `PIX2`, `D_METERS`; keep points on the same horizontal line
+- Activation error for `.venv`
+  - In Admin PowerShell, run once: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+
+---
+
+## 12) FAQ
+- Which YOLO model?
+  - `yolo11n.pt` (Ultralytics). You can replace with another YOLO weight if you prefer (update the path in code).
+- Which vehicles are detected?
+  - By default: car, truck, bus, motorcycle/motorbike, bicycle
+- Can I use a webcam?
+  - This version expects a video file path. You could modify `VIDEO_IN` to a camera index, but that is not covered here.
+
+---
+
+## 13) Project Structure (Simple)
+- `vehicle_detection_main_yolo.py` — main script
+- `yolo11n.pt` — model weights (keep in the same folder)
+- `input_video.mp4` — your input video (can be renamed)
+- `output_video.avi` — generated output when saving
+- `.venv/` — virtual environment folder
+
+---
+
