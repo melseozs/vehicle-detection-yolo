@@ -178,6 +178,5 @@ This project is open source and available under the MIT License.
 - [Supervision](https://github.com/roboflow/supervision) for tracking and visualization
 - [ByteTrack](https://github.com/ifzhang/ByteTrack) for multi-object tracking
 
-## 📞 Support
 
-If you encounter any issues or have questions, please open an issue on GitHub.
+
